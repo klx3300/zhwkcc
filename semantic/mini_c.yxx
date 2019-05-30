@@ -1,130 +1,285 @@
-%error-verbose
+%define parse.error verbose
 %locations
 %{
 #include <cstdio>
 #include <cmath>
 #include <string>
+#include <cstdarg>
+#include "ast.hpp"
+#include "val_type.hpp"
+#include "../utility/utility.hpp"
+#include "../lexical/mini_c.lex.hpp"
+using namespace std;
+#define YYSTYPE ValueType
 extern int yylineno;
-extern int yyleng
+extern int yyleng;
 extern char *yytext;
 extern FILE *yyin;
 void yyerror(const char* fmt, ...);
-void display(struct node *,int);
 %}
 
-%union {
-	int    type_int;
-	float  type_float;
-	char   type_id[32];
-	struct node *ptr;
-};
+/* %union { */
+/* 	int    type_int; */
+/* 	float  type_float; */ /* 	char   type_Identifier[32]; */ /* 	struct node *ptr; */
+/* }; */
+
+%define api.value.type {ValueType}
+
 
 //  %type 定义非终结符的语义值类型
-%type  <ptr> program ExtDefList ExtDef  Specifier ExtDecList FuncDec CompSt VarList VarDec ParamDec Stmt StmList DefList Def DecList Dec Exp Args
+%type  <astnode> program ExtDefList ExtDef Specifier FuncDec StmtBlk ParamList VarDec ParamDec Stmt StmList Def VariableList Exp Args
 
 //% token 定义终结符的语义值类型
-%token <type_int> INT              //指定INT的语义值是type_int，有词法分析得到的数值
-%token <type_id> ID RELOP TYPE  //指定ID,RELOP 的语义值是type_id，有词法分析得到的标识符字符串
-%token <type_float> FLOAT         //指定ID的语义值是type_id，有词法分析得到的标识符字符串
+%token <literal_int> LiteralInteger              //指定INT的语义值是type_int，有词法分析得到的数值
+%token <identifier> Identifier OperatorRelation IdentifierType  //指定Identifier,RELOP 的语义值是type_Identifier，有词法分析得到的标识符字符串
+%token <literal_float> LiteralFloat
+%token <literal_string> LiteralString LiteralChar
+%token ParLeft ParRight BlockLeft BlockRight Semicolon Comma   //用bison对该文件编译时，带参数-d，生成的exp.tab.h中给这些单词进行编码，可在lex.l中包含parser.tab.h使用这些单词种类码
+%token OperatorPlus OperatorMinus OperatorMul OperatorDiv
+%token OperatorAssign OperatorAnd OperatorOr OperatorNot
+%token CondIf CondElse LoopWhile Return
+%token OperatorAddr OperatorDeref OperatorMember
+%token OperatorAccessL OperatorAccessR
+%token AsArray AsPointer
 
-%token LP RP LC RC SEMI COMMA   //用bison对该文件编译时，带参数-d，生成的exp.tab.h中给这些单词进行编码，可在lex.l中包含parser.tab.h使用这些单词种类码
-%token PLUS MINUS STAR DIV ASSIGNOP AND OR NOT IF ELSE WHILE RETURN
+%left OperatorAssign
+%left OperatorOr
+%left OperatorAnd
+%left OperatorRelation
+%left OperatorPlus OperatorMinus
+%left OperatorMul OperatorDiv
+%left OperatorMember OperatorAccess OperatorAccessL OperatorAccessR
+%right OperatorUnaryMinus OperatorNot OperatorAddr OperatorDeref
 
-%left ASSIGNOP
-%left OR
-%left AND
-%left RELOP
-%left PLUS MINUS
-%left STAR DIV
-%right UMINUS NOT
-
-%nonassoc LOWER_THEN_ELSE
-%nonassoc ELSE
+%nonassoc CondIfTrue
+%nonassoc CondElse
 
 %%
 
-program: ExtDefList    { display($1,0); semantic_Analysis0($1);}     /*显示语法树,语义分析*/
-         ; 
-ExtDefList: {$$=NULL;}
-          | ExtDef ExtDefList {$$=mknode(EXT_DEF_LIST,$1,$2,NULL,yylineno);}   //每一个EXTDEFLIST的结点，其第1棵子树对应一个外部变量声明或函数
-          ;  
-ExtDef:   Specifier ExtDecList SEMI   {$$=mknode(EXT_VAR_DEF,$1,$2,NULL,yylineno);}   //该结点对应一个外部变量声明
-         |Specifier FuncDec CompSt    {$$=mknode(FUNC_DEF,$1,$2,$3,yylineno);}         //该结点对应一个函数定义
-         | error SEMI   {$$=NULL; }
-         ;
-Specifier:  TYPE    {$$=mknode(TYPE,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);$$->type=!strcmp($1,"int")?INT:FLOAT;}   
-           ;      
-ExtDecList:  VarDec      {$$=$1;}       /*每一个EXT_DECLIST的结点，其第一棵子树对应一个变量名(ID类型的结点),第二棵子树对应剩下的外部变量名*/
-           | VarDec COMMA ExtDecList {$$=mknode(EXT_DEC_LIST,$1,$3,NULL,yylineno);}
-           ;  
-VarDec:  ID          {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}   //ID结点，标识符符号串存放结点的type_id
-         ;
-FuncDec: ID LP VarList RP   {$$=mknode(FUNC_DEC,$3,NULL,NULL,yylineno);strcpy($$->type_id,$1);}//函数名存放在$$->type_id
-		|ID LP  RP   {$$=mknode(FUNC_DEC,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}//函数名存放在$$->type_id
+program:
+    ExtDefList {
+        $1->recursive_print(0);
+        /* semantic_Analysis0($1); */
+    }
+    ; 
 
-        ;  
-VarList: ParamDec  {$$=mknode(PARAM_LIST,$1,NULL,NULL,yylineno);}
-        | ParamDec COMMA  VarList  {$$=mknode(PARAM_LIST,$1,$3,NULL,yylineno);}
-        ;
-ParamDec: Specifier VarDec         {$$=mknode(PARAM_DEC,$1,$2,NULL,yylineno);}
-         ;
+//每一个EXTDEFLIST的结点，其第1棵子树对应一个外部变量声明或函数
+ExtDefList:
+    {$$=NULL;}
+    | ExtDef ExtDefList {
+        $$=new ASTNode(TYPE_MASTER_LIST,$1,$2,NULL,yylineno);
+    }
+    ;
 
-CompSt: LC DefList StmList RC    {$$=mknode(COMP_STM,$2,$3,NULL,yylineno);}
-       ;
-StmList: {$$=NULL; }  
-        | Stmt StmList  {$$=mknode(STM_LIST,$1,$2,NULL,yylineno);}
-        ;
-Stmt:   Exp SEMI    {$$=mknode(EXP_STMT,$1,NULL,NULL,yylineno);}
-      | CompSt      {$$=$1;}      //复合语句结点直接最为语句结点，不再生成新的结点
-      | RETURN Exp SEMI   {$$=mknode(RETURN,$2,NULL,NULL,yylineno);}
-      | IF LP Exp RP Stmt %prec LOWER_THEN_ELSE   {$$=mknode(IF_THEN,$3,$5,NULL,yylineno);}
-      | IF LP Exp RP Stmt ELSE Stmt   {$$=mknode(IF_THEN_ELSE,$3,$5,$7,yylineno);}
-      | WHILE LP Exp RP Stmt {$$=mknode(WHILE,$3,$5,NULL,yylineno);}
-      ;
+ExtDef:
+    Specifier VariableList Semicolon {
+        $$=new ASTNode(TYPE_GLOBAL_VAR,$1,$2,NULL,yylineno);
+    }
+    | Specifier FuncDec Semicolon {
+        $$=new ASTNode(TYPE_FUNC_DECL,$1,$2,NULL,yylineno);
+    }
+    | Specifier FuncDec StmtBlk {
+        $$=new ASTNode(TYPE_FUNC_DEF,$1,$2,$3,yylineno);
+    }
+    | error Semicolon {$$=NULL;}
+    ;
+
+Specifier: IdentifierType {
+        $$=new ASTNode(TYPE_TYPESPEC,NULL,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    | AsArray ParLeft LiteralInteger ParRight Specifier {
+        $$=new ASTNode(TYPE_COMPLEX, $5, NULL, NULL, yylineno);
+        $$->data.identifier = string("array");
+        $$->data.literal_int = $3;
+    }
+    | AsPointer Specifier {
+        $$=new ASTNode(TYPE_COMPLEX, $2, NULL, NULL, yylineno);
+        $$->data.identifier = string("pointer");
+    }
+    ;
+
+VariableList:
+    VarDec {$$=$1;}
+    | VarDec Comma VariableList {
+        $$=new ASTNode(TYPE_VAR_DECLIST,$1,$3,NULL,yylineno);
+    }
+    | VarDec OperatorAssign Exp Comma VariableList {
+        $$=new ASTNode(TYPE_INITIALIZER,$1,$3,$5,yylineno);
+    }
+    ;
+
+VarDec: Identifier {
+        $$=new ASTNode(TYPE_VARNAME,NULL,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    ;
+
+FuncDec:
+    Identifier ParLeft ParamList ParRight {
+        $$=new ASTNode(TYPE_FUNC_PROTO,$3,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    | Identifier ParLeft ParRight {
+        $$=new ASTNode(TYPE_FUNC_PROTO,NULL,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    ;
+
+ParamList: ParamDec {
+        $$=new ASTNode(TYPE_PARAM_LIST,$1,NULL,NULL,yylineno);
+    }
+    | ParamDec Comma ParamList {
+        $$=new ASTNode(TYPE_PARAM_LIST,$1,$3,NULL,yylineno);
+    }
+    ;
+
+ParamDec: Specifier VarDec {
+        $$=new ASTNode(TYPE_PARAM,$1,$2,NULL,yylineno);
+    }
+    ;
+
+StmtBlk: BlockLeft StmList BlockRight {
+        $$=new ASTNode(TYPE_STMTBLK, $2, NULL, NULL, yylineno);
+    }
+    ;
+
+StmList: {$$=NULL;}  
+    | Stmt StmList {
+        $$=new ASTNode(TYPE_STMTLIST,$1,$2,NULL,yylineno);
+    }
+    | Def StmList {
+        $$=new ASTNode(TYPE_STMTLIST,$1,$2,NULL,yylineno);
+    }
+    ;
+
+Stmt:
+    Exp Semicolon {
+        $$=new ASTNode(TYPE_EXPR,$1,NULL,NULL,yylineno);
+    }
+    | StmtBlk {$$=$1;}
+    | Return Exp Semicolon {
+        $$=new ASTNode(TYPE_RETURN,$2,NULL,NULL,yylineno);
+    }
+    | CondIf ParLeft Exp ParRight Stmt %prec CondIfTrue {
+        $$=new ASTNode(TYPE_IFTRUE,$3,$5,NULL,yylineno);
+    }
+    | CondIf ParLeft Exp ParRight Stmt CondElse Stmt {
+        $$=new ASTNode(TYPE_IF,$3,$5,$7,yylineno);
+    }
+    | LoopWhile ParLeft Exp ParRight Stmt {
+        $$=new ASTNode(TYPE_WHILE,$3,$5,NULL,yylineno);
+    }
+    ;
   
-DefList: {$$=NULL; }
-        | Def DefList {$$=mknode(DEF_LIST,$1,$2,NULL,yylineno);}
-        ;
-Def:    Specifier DecList SEMI {$$=mknode(VAR_DEF,$1,$2,NULL,yylineno);}
-        ;
-DecList: Dec  {$$=mknode(DEC_LIST,$1,NULL,NULL,yylineno);}
-       | Dec COMMA DecList  {$$=mknode(DEC_LIST,$1,$3,NULL,yylineno);}
-	   ;
-Dec:     VarDec  {$$=$1;}
-       | VarDec ASSIGNOP Exp  {$$=mknode(ASSIGNOP,$1,$3,NULL,yylineno);strcpy($$->type_id,"ASSIGNOP");}
-       ;
-Exp:    Exp ASSIGNOP Exp {$$=mknode(ASSIGNOP,$1,$3,NULL,yylineno);strcpy($$->type_id,"ASSIGNOP");}//$$结点type_id空置未用，正好存放运算符
-      | Exp AND Exp   {$$=mknode(AND,$1,$3,NULL,yylineno);strcpy($$->type_id,"AND");}
-      | Exp OR Exp    {$$=mknode(OR,$1,$3,NULL,yylineno);strcpy($$->type_id,"OR");}
-      | Exp RELOP Exp {$$=mknode(RELOP,$1,$3,NULL,yylineno);strcpy($$->type_id,$2);}  //词法分析关系运算符号自身值保存在$2中
-      | Exp PLUS Exp  {$$=mknode(PLUS,$1,$3,NULL,yylineno);strcpy($$->type_id,"PLUS");}
-      | Exp MINUS Exp {$$=mknode(MINUS,$1,$3,NULL,yylineno);strcpy($$->type_id,"MINUS");}
-      | Exp STAR Exp  {$$=mknode(STAR,$1,$3,NULL,yylineno);strcpy($$->type_id,"STAR");}
-      | Exp DIV Exp   {$$=mknode(DIV,$1,$3,NULL,yylineno);strcpy($$->type_id,"DIV");}
-      | LP Exp RP     {$$=$2;}
-      | MINUS Exp %prec UMINUS   {$$=mknode(UMINUS,$2,NULL,NULL,yylineno);strcpy($$->type_id,"UMINUS");}
-      | NOT Exp       {$$=mknode(NOT,$2,NULL,NULL,yylineno);strcpy($$->type_id,"NOT");}
-      | ID LP Args RP {$$=mknode(FUNC_CALL,$3,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
-      | ID LP RP      {$$=mknode(FUNC_CALL,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
-      | ID            {$$=mknode(ID,NULL,NULL,NULL,yylineno);strcpy($$->type_id,$1);}
-      | INT           {$$=mknode(INT,NULL,NULL,NULL,yylineno);$$->type_int=$1;$$->type=INT;}
-      | FLOAT         {$$=mknode(FLOAT,NULL,NULL,NULL,yylineno);$$->type_float=$1;$$->type=FLOAT;}
-      ;
-Args:    Exp COMMA Args    {$$=mknode(ARGS,$1,$3,NULL,yylineno);}
-       | Exp               {$$=mknode(ARGS,$1,NULL,NULL,yylineno);}
-       ;
-       
+/*NO NEED..*/
+/* DefList: {$$=NULL; } */
+/*         | Def DefList {$$=new ASTNode(DEF_LIST,$1,$2,NULL,yylineno);} */
+/*         ; */
+
+Def: Specifier VariableList Semicolon {
+        $$=new ASTNode(TYPE_VARDEF,$1,$2,NULL,yylineno);
+    }
+    ;
+
+Exp:
+    Exp OperatorAssign Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("assign");
+    }
+    | Exp OperatorAnd Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("and");
+    }
+    | Exp OperatorOr Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("OR");
+    }
+    | Exp OperatorRelation Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string($2);
+    }
+    | Exp OperatorPlus Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("plus");
+    }
+    | Exp OperatorMinus Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("minus");
+    }
+    | Exp OperatorMul Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("multiply");
+    }
+    | Exp OperatorDiv Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
+        $$->data.identifier = string("divide");
+    }
+    | ParLeft Exp ParRight {$$=$2;}
+    | OperatorMinus Exp %prec OperatorUnaryMinus {
+        $$=new ASTNode(TYPE_OPERATOR,$2,NULL,NULL,yylineno);
+        $$->data.identifier = string("negate");
+    }
+    | OperatorNot Exp {
+        $$=new ASTNode(TYPE_OPERATOR,$2,NULL,NULL,yylineno);
+        $$->data.identifier = string("not");
+    }
+    | OperatorDeref ParLeft Exp ParRight {
+        $$=new ASTNode(TYPE_OPERATOR,$3,NULL,NULL,yylineno);
+        $$->data.identifier = string("dereference");
+    }
+    | OperatorAddr ParLeft Exp ParRight {
+        $$=new ASTNode(TYPE_OPERATOR,$3,NULL,NULL,yylineno);
+        $$->data.identifier = string("address");
+    }
+    | Exp OperatorMember Identifier {
+        $$=new ASTNode(TYPE_OPERATOR,$1,NULL,NULL,yylineno);
+        $$->data.identifier = string("member");
+        $$->data.literal_string = string($3);
+    }
+    | Exp OperatorAccessL Exp OperatorAccessR %prec OperatorAccess {
+        $$=new ASTNode(TYPE_ACCESS,$1,$3,NULL,yylineno);
+    }
+    | Identifier ParLeft Args ParRight {
+        $$=new ASTNode(TYPE_CALL,$3,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    | Identifier ParLeft ParRight {
+        $$=new ASTNode(TYPE_CALL,NULL,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    | Identifier {
+        $$=new ASTNode(TYPE_IDENTIFIER,NULL,NULL,NULL,yylineno);
+        $$->data.identifier = string($1);
+    }
+    | LiteralInteger {
+        $$=new ASTNode(TYPE_LITERAL_INTEGER,NULL,NULL,NULL,yylineno);
+        $$->data.literal_int=$1;
+    }
+    | LiteralFloat {
+        $$=new ASTNode(TYPE_LITERAL_FLOAT,NULL,NULL,NULL,yylineno);
+        $$->data.literal_float=$1;
+    }
+    | LiteralString {
+        $$=new ASTNode(TYPE_LITERAL_STRING,NULL,NULL,NULL,yylineno);
+        $$->data.literal_string=trim_string_quotes(string($1));
+    }
+    | LiteralChar {
+        $$=new ASTNode(TYPE_LITERAL_INTEGER,NULL,NULL,NULL,yylineno);
+        $$->data.literal_int=extract_from_char_string($1);
+    }
+    ;
+
+Args: Exp Comma Args {
+        $$=new ASTNode(TYPE_ARGLIST,$1,$3,NULL,yylineno);
+    }
+    | Exp {
+        $$=new ASTNode(TYPE_ARGLIST,$1,NULL,NULL,yylineno);
+    }
+    ;
+
 %%
 
-int main(int argc, char *argv[]){
-	yyin=fopen(argv[1],"r");
-	if (!yyin) return;
-	yylineno=1;
-	yyparse();
-	return 0;
-	}
-
-#include<stdarg.h>
 void yyerror(const char* fmt, ...)
 {
     va_list ap;

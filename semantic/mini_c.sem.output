@@ -1,0 +1,2559 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: ExtDefList
+
+    2 ExtDefList: %empty
+    3           | ExtDef ExtDefList
+
+    4 ExtDef: Specifier VariableList Semicolon
+    5       | Specifier FuncDec Semicolon
+    6       | Specifier FuncDec StmtBlk
+    7       | error Semicolon
+
+    8 Specifier: IdentifierType
+    9          | AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | AsPointer Specifier
+
+   11 VariableList: VarDec
+   12             | VarDec Comma VariableList
+   13             | VarDec OperatorAssign Exp Comma VariableList
+
+   14 VarDec: Identifier
+
+   15 FuncDec: Identifier ParLeft ParamList ParRight
+   16        | Identifier ParLeft ParRight
+
+   17 ParamList: ParamDec
+   18          | ParamDec Comma ParamList
+
+   19 ParamDec: Specifier VarDec
+
+   20 StmtBlk: BlockLeft StmList BlockRight
+
+   21 StmList: %empty
+   22        | Stmt StmList
+   23        | Def StmList
+
+   24 Stmt: Exp Semicolon
+   25     | StmtBlk
+   26     | Return Exp Semicolon
+   27     | CondIf ParLeft Exp ParRight Stmt
+   28     | CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   29     | LoopWhile ParLeft Exp ParRight Stmt
+
+   30 Def: Specifier VariableList Semicolon
+
+   31 Exp: Exp OperatorAssign Exp
+   32    | Exp OperatorAnd Exp
+   33    | Exp OperatorOr Exp
+   34    | Exp OperatorRelation Exp
+   35    | Exp OperatorPlus Exp
+   36    | Exp OperatorMinus Exp
+   37    | Exp OperatorMul Exp
+   38    | Exp OperatorDiv Exp
+   39    | ParLeft Exp ParRight
+   40    | OperatorMinus Exp
+   41    | OperatorNot Exp
+   42    | OperatorDeref ParLeft Exp ParRight
+   43    | OperatorAddr ParLeft Exp ParRight
+   44    | Exp OperatorMember Identifier
+   45    | Exp OperatorAccessL Exp OperatorAccessR
+   46    | Identifier ParLeft Args ParRight
+   47    | Identifier ParLeft ParRight
+   48    | Identifier
+   49    | LiteralInteger
+   50    | LiteralFloat
+   51    | LiteralString
+   52    | LiteralChar
+
+   53 Args: Exp Comma Args
+   54     | Exp
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 7
+LiteralInteger <literal_int> (258) 9 49
+Identifier <identifier> (259) 14 15 16 44 46 47 48
+OperatorRelation <identifier> (260) 34
+IdentifierType <identifier> (261) 8
+LiteralFloat <literal_float> (262) 50
+LiteralString <literal_string> (263) 51
+LiteralChar <literal_string> (264) 52
+ParLeft (265) 9 15 16 27 28 29 39 42 43 46 47
+ParRight (266) 9 15 16 27 28 29 39 42 43 46 47
+BlockLeft (267) 20
+BlockRight (268) 20
+Semicolon (269) 4 5 7 24 26 30
+Comma (270) 12 13 18 53
+OperatorPlus (271) 35
+OperatorMinus (272) 36 40
+OperatorMul (273) 37
+OperatorDiv (274) 38
+OperatorAssign (275) 13 31
+OperatorAnd (276) 32
+OperatorOr (277) 33
+OperatorNot (278) 41
+CondIf (279) 27 28
+CondElse (280) 28
+LoopWhile (281) 29
+Return (282) 26
+OperatorAddr (283) 43
+OperatorDeref (284) 42
+OperatorMember (285) 44
+OperatorAccessL (286) 45
+OperatorAccessR (287) 45
+AsArray (288) 9
+AsPointer (289) 10
+OperatorAccess (290)
+OperatorUnaryMinus (291)
+CondIfTrue (292)
+
+
+Nonterminals, with rules where they appear
+
+$accept (38)
+    on left: 0
+program <astnode> (39)
+    on left: 1, on right: 0
+ExtDefList <astnode> (40)
+    on left: 2 3, on right: 1 3
+ExtDef <astnode> (41)
+    on left: 4 5 6 7, on right: 3
+Specifier <astnode> (42)
+    on left: 8 9 10, on right: 4 5 6 9 10 19 30
+VariableList <astnode> (43)
+    on left: 11 12 13, on right: 4 12 13 30
+VarDec <astnode> (44)
+    on left: 14, on right: 11 12 13 19
+FuncDec <astnode> (45)
+    on left: 15 16, on right: 5 6
+ParamList <astnode> (46)
+    on left: 17 18, on right: 15 18
+ParamDec <astnode> (47)
+    on left: 19, on right: 17 18
+StmtBlk <astnode> (48)
+    on left: 20, on right: 6 25
+StmList <astnode> (49)
+    on left: 21 22 23, on right: 20 22 23
+Stmt <astnode> (50)
+    on left: 24 25 26 27 28 29, on right: 22 27 28 29
+Def <astnode> (51)
+    on left: 30, on right: 23
+Exp <astnode> (52)
+    on left: 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+    49 50 51 52, on right: 13 24 26 27 28 29 31 32 33 34 35 36 37 38
+    39 40 41 42 43 44 45 53 54
+Args <astnode> (53)
+    on left: 53 54, on right: 46 53
+
+
+State 0
+
+    0 $accept: . program $end
+    1 program: . ExtDefList
+    2 ExtDefList: . %empty  [$end]
+    3           | . ExtDef ExtDefList
+    4 ExtDef: . Specifier VariableList Semicolon
+    5       | . Specifier FuncDec Semicolon
+    6       | . Specifier FuncDec StmtBlk
+    7       | . error Semicolon
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+
+    error           shift, and go to state 1
+    IdentifierType  shift, and go to state 2
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    $end  reduce using rule 2 (ExtDefList)
+
+    program     go to state 5
+    ExtDefList  go to state 6
+    ExtDef      go to state 7
+    Specifier   go to state 8
+
+
+State 1
+
+    7 ExtDef: error . Semicolon
+
+    Semicolon  shift, and go to state 9
+
+
+State 2
+
+    8 Specifier: IdentifierType .
+
+    $default  reduce using rule 8 (Specifier)
+
+
+State 3
+
+    9 Specifier: AsArray . ParLeft LiteralInteger ParRight Specifier
+
+    ParLeft  shift, and go to state 10
+
+
+State 4
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+   10          | AsPointer . Specifier
+
+    IdentifierType  shift, and go to state 2
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    Specifier  go to state 11
+
+
+State 5
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 12
+
+
+State 6
+
+    1 program: ExtDefList .
+
+    $default  reduce using rule 1 (program)
+
+
+State 7
+
+    2 ExtDefList: . %empty  [$end]
+    3           | . ExtDef ExtDefList
+    3           | ExtDef . ExtDefList
+    4 ExtDef: . Specifier VariableList Semicolon
+    5       | . Specifier FuncDec Semicolon
+    6       | . Specifier FuncDec StmtBlk
+    7       | . error Semicolon
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+
+    error           shift, and go to state 1
+    IdentifierType  shift, and go to state 2
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    $end  reduce using rule 2 (ExtDefList)
+
+    ExtDefList  go to state 13
+    ExtDef      go to state 7
+    Specifier   go to state 8
+
+
+State 8
+
+    4 ExtDef: Specifier . VariableList Semicolon
+    5       | Specifier . FuncDec Semicolon
+    6       | Specifier . FuncDec StmtBlk
+   11 VariableList: . VarDec
+   12             | . VarDec Comma VariableList
+   13             | . VarDec OperatorAssign Exp Comma VariableList
+   14 VarDec: . Identifier
+   15 FuncDec: . Identifier ParLeft ParamList ParRight
+   16        | . Identifier ParLeft ParRight
+
+    Identifier  shift, and go to state 14
+
+    VariableList  go to state 15
+    VarDec        go to state 16
+    FuncDec       go to state 17
+
+
+State 9
+
+    7 ExtDef: error Semicolon .
+
+    $default  reduce using rule 7 (ExtDef)
+
+
+State 10
+
+    9 Specifier: AsArray ParLeft . LiteralInteger ParRight Specifier
+
+    LiteralInteger  shift, and go to state 18
+
+
+State 11
+
+   10 Specifier: AsPointer Specifier .
+
+    $default  reduce using rule 10 (Specifier)
+
+
+State 12
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 13
+
+    3 ExtDefList: ExtDef ExtDefList .
+
+    $default  reduce using rule 3 (ExtDefList)
+
+
+State 14
+
+   14 VarDec: Identifier .  [Semicolon, Comma, OperatorAssign]
+   15 FuncDec: Identifier . ParLeft ParamList ParRight
+   16        | Identifier . ParLeft ParRight
+
+    ParLeft  shift, and go to state 19
+
+    $default  reduce using rule 14 (VarDec)
+
+
+State 15
+
+    4 ExtDef: Specifier VariableList . Semicolon
+
+    Semicolon  shift, and go to state 20
+
+
+State 16
+
+   11 VariableList: VarDec .  [Semicolon]
+   12             | VarDec . Comma VariableList
+   13             | VarDec . OperatorAssign Exp Comma VariableList
+
+    Comma           shift, and go to state 21
+    OperatorAssign  shift, and go to state 22
+
+    $default  reduce using rule 11 (VariableList)
+
+
+State 17
+
+    5 ExtDef: Specifier FuncDec . Semicolon
+    6       | Specifier FuncDec . StmtBlk
+   20 StmtBlk: . BlockLeft StmList BlockRight
+
+    BlockLeft  shift, and go to state 23
+    Semicolon  shift, and go to state 24
+
+    StmtBlk  go to state 25
+
+
+State 18
+
+    9 Specifier: AsArray ParLeft LiteralInteger . ParRight Specifier
+
+    ParRight  shift, and go to state 26
+
+
+State 19
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+   15 FuncDec: Identifier ParLeft . ParamList ParRight
+   16        | Identifier ParLeft . ParRight
+   17 ParamList: . ParamDec
+   18          | . ParamDec Comma ParamList
+   19 ParamDec: . Specifier VarDec
+
+    IdentifierType  shift, and go to state 2
+    ParRight        shift, and go to state 27
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    Specifier  go to state 28
+    ParamList  go to state 29
+    ParamDec   go to state 30
+
+
+State 20
+
+    4 ExtDef: Specifier VariableList Semicolon .
+
+    $default  reduce using rule 4 (ExtDef)
+
+
+State 21
+
+   11 VariableList: . VarDec
+   12             | . VarDec Comma VariableList
+   12             | VarDec Comma . VariableList
+   13             | . VarDec OperatorAssign Exp Comma VariableList
+   14 VarDec: . Identifier
+
+    Identifier  shift, and go to state 31
+
+    VariableList  go to state 32
+    VarDec        go to state 16
+
+
+State 22
+
+   13 VariableList: VarDec OperatorAssign . Exp Comma VariableList
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 43
+
+
+State 23
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+   20 StmtBlk: . BlockLeft StmList BlockRight
+   20        | BlockLeft . StmList BlockRight
+   21 StmList: . %empty  [BlockRight]
+   22        | . Stmt StmList
+   23        | . Def StmList
+   24 Stmt: . Exp Semicolon
+   25     | . StmtBlk
+   26     | . Return Exp Semicolon
+   27     | . CondIf ParLeft Exp ParRight Stmt
+   28     | . CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   29     | . LoopWhile ParLeft Exp ParRight Stmt
+   30 Def: . Specifier VariableList Semicolon
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    IdentifierType  shift, and go to state 2
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    BlockLeft       shift, and go to state 23
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    CondIf          shift, and go to state 44
+    LoopWhile       shift, and go to state 45
+    Return          shift, and go to state 46
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    $default  reduce using rule 21 (StmList)
+
+    Specifier  go to state 47
+    StmtBlk    go to state 48
+    StmList    go to state 49
+    Stmt       go to state 50
+    Def        go to state 51
+    Exp        go to state 52
+
+
+State 24
+
+    5 ExtDef: Specifier FuncDec Semicolon .
+
+    $default  reduce using rule 5 (ExtDef)
+
+
+State 25
+
+    6 ExtDef: Specifier FuncDec StmtBlk .
+
+    $default  reduce using rule 6 (ExtDef)
+
+
+State 26
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+    9          | AsArray ParLeft LiteralInteger ParRight . Specifier
+   10          | . AsPointer Specifier
+
+    IdentifierType  shift, and go to state 2
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    Specifier  go to state 53
+
+
+State 27
+
+   16 FuncDec: Identifier ParLeft ParRight .
+
+    $default  reduce using rule 16 (FuncDec)
+
+
+State 28
+
+   14 VarDec: . Identifier
+   19 ParamDec: Specifier . VarDec
+
+    Identifier  shift, and go to state 31
+
+    VarDec  go to state 54
+
+
+State 29
+
+   15 FuncDec: Identifier ParLeft ParamList . ParRight
+
+    ParRight  shift, and go to state 55
+
+
+State 30
+
+   17 ParamList: ParamDec .  [ParRight]
+   18          | ParamDec . Comma ParamList
+
+    Comma  shift, and go to state 56
+
+    $default  reduce using rule 17 (ParamList)
+
+
+State 31
+
+   14 VarDec: Identifier .
+
+    $default  reduce using rule 14 (VarDec)
+
+
+State 32
+
+   12 VariableList: VarDec Comma VariableList .
+
+    $default  reduce using rule 12 (VariableList)
+
+
+State 33
+
+   49 Exp: LiteralInteger .
+
+    $default  reduce using rule 49 (Exp)
+
+
+State 34
+
+   46 Exp: Identifier . ParLeft Args ParRight
+   47    | Identifier . ParLeft ParRight
+   48    | Identifier .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorMul, OperatorDiv, OperatorAssign, OperatorAnd, OperatorOr, OperatorMember, OperatorAccessL, OperatorAccessR]
+
+    ParLeft  shift, and go to state 57
+
+    $default  reduce using rule 48 (Exp)
+
+
+State 35
+
+   50 Exp: LiteralFloat .
+
+    $default  reduce using rule 50 (Exp)
+
+
+State 36
+
+   51 Exp: LiteralString .
+
+    $default  reduce using rule 51 (Exp)
+
+
+State 37
+
+   52 Exp: LiteralChar .
+
+    $default  reduce using rule 52 (Exp)
+
+
+State 38
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   39    | ParLeft . Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 58
+
+
+State 39
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   40    | OperatorMinus . Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 59
+
+
+State 40
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   41    | OperatorNot . Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 60
+
+
+State 41
+
+   43 Exp: OperatorAddr . ParLeft Exp ParRight
+
+    ParLeft  shift, and go to state 61
+
+
+State 42
+
+   42 Exp: OperatorDeref . ParLeft Exp ParRight
+
+    ParLeft  shift, and go to state 62
+
+
+State 43
+
+   13 VariableList: VarDec OperatorAssign Exp . Comma VariableList
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    Comma             shift, and go to state 64
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 44
+
+   27 Stmt: CondIf . ParLeft Exp ParRight Stmt
+   28     | CondIf . ParLeft Exp ParRight Stmt CondElse Stmt
+
+    ParLeft  shift, and go to state 74
+
+
+State 45
+
+   29 Stmt: LoopWhile . ParLeft Exp ParRight Stmt
+
+    ParLeft  shift, and go to state 75
+
+
+State 46
+
+   26 Stmt: Return . Exp Semicolon
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 76
+
+
+State 47
+
+   11 VariableList: . VarDec
+   12             | . VarDec Comma VariableList
+   13             | . VarDec OperatorAssign Exp Comma VariableList
+   14 VarDec: . Identifier
+   30 Def: Specifier . VariableList Semicolon
+
+    Identifier  shift, and go to state 31
+
+    VariableList  go to state 77
+    VarDec        go to state 16
+
+
+State 48
+
+   25 Stmt: StmtBlk .
+
+    $default  reduce using rule 25 (Stmt)
+
+
+State 49
+
+   20 StmtBlk: BlockLeft StmList . BlockRight
+
+    BlockRight  shift, and go to state 78
+
+
+State 50
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+   20 StmtBlk: . BlockLeft StmList BlockRight
+   21 StmList: . %empty  [BlockRight]
+   22        | . Stmt StmList
+   22        | Stmt . StmList
+   23        | . Def StmList
+   24 Stmt: . Exp Semicolon
+   25     | . StmtBlk
+   26     | . Return Exp Semicolon
+   27     | . CondIf ParLeft Exp ParRight Stmt
+   28     | . CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   29     | . LoopWhile ParLeft Exp ParRight Stmt
+   30 Def: . Specifier VariableList Semicolon
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    IdentifierType  shift, and go to state 2
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    BlockLeft       shift, and go to state 23
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    CondIf          shift, and go to state 44
+    LoopWhile       shift, and go to state 45
+    Return          shift, and go to state 46
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    $default  reduce using rule 21 (StmList)
+
+    Specifier  go to state 47
+    StmtBlk    go to state 48
+    StmList    go to state 79
+    Stmt       go to state 50
+    Def        go to state 51
+    Exp        go to state 52
+
+
+State 51
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+   20 StmtBlk: . BlockLeft StmList BlockRight
+   21 StmList: . %empty  [BlockRight]
+   22        | . Stmt StmList
+   23        | . Def StmList
+   23        | Def . StmList
+   24 Stmt: . Exp Semicolon
+   25     | . StmtBlk
+   26     | . Return Exp Semicolon
+   27     | . CondIf ParLeft Exp ParRight Stmt
+   28     | . CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   29     | . LoopWhile ParLeft Exp ParRight Stmt
+   30 Def: . Specifier VariableList Semicolon
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    IdentifierType  shift, and go to state 2
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    BlockLeft       shift, and go to state 23
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    CondIf          shift, and go to state 44
+    LoopWhile       shift, and go to state 45
+    Return          shift, and go to state 46
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    $default  reduce using rule 21 (StmList)
+
+    Specifier  go to state 47
+    StmtBlk    go to state 48
+    StmList    go to state 80
+    Stmt       go to state 50
+    Def        go to state 51
+    Exp        go to state 52
+
+
+State 52
+
+   24 Stmt: Exp . Semicolon
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    Semicolon         shift, and go to state 81
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 53
+
+    9 Specifier: AsArray ParLeft LiteralInteger ParRight Specifier .
+
+    $default  reduce using rule 9 (Specifier)
+
+
+State 54
+
+   19 ParamDec: Specifier VarDec .
+
+    $default  reduce using rule 19 (ParamDec)
+
+
+State 55
+
+   15 FuncDec: Identifier ParLeft ParamList ParRight .
+
+    $default  reduce using rule 15 (FuncDec)
+
+
+State 56
+
+    8 Specifier: . IdentifierType
+    9          | . AsArray ParLeft LiteralInteger ParRight Specifier
+   10          | . AsPointer Specifier
+   17 ParamList: . ParamDec
+   18          | . ParamDec Comma ParamList
+   18          | ParamDec Comma . ParamList
+   19 ParamDec: . Specifier VarDec
+
+    IdentifierType  shift, and go to state 2
+    AsArray         shift, and go to state 3
+    AsPointer       shift, and go to state 4
+
+    Specifier  go to state 28
+    ParamList  go to state 82
+    ParamDec   go to state 30
+
+
+State 57
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   46    | Identifier ParLeft . Args ParRight
+   47    | . Identifier ParLeft ParRight
+   47    | Identifier ParLeft . ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+   53 Args: . Exp Comma Args
+   54     | . Exp
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    ParRight        shift, and go to state 83
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp   go to state 84
+    Args  go to state 85
+
+
+State 58
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   39    | ParLeft Exp . ParRight
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    ParRight          shift, and go to state 86
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 59
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   40    | OperatorMinus Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorMul, OperatorDiv, OperatorAssign, OperatorAnd, OperatorOr, OperatorMember, OperatorAccessL, OperatorAccessR]
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    $default  reduce using rule 40 (Exp)
+
+    Conflict between rule 40 and token OperatorRelation resolved as reduce (OperatorRelation < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorPlus resolved as reduce (OperatorPlus < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorMinus resolved as reduce (OperatorMinus < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorMul resolved as reduce (OperatorMul < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorDiv resolved as reduce (OperatorDiv < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorOr resolved as reduce (OperatorOr < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorMember resolved as reduce (OperatorMember < OperatorUnaryMinus).
+    Conflict between rule 40 and token OperatorAccessL resolved as reduce (OperatorAccessL < OperatorUnaryMinus).
+
+
+State 60
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   41    | OperatorNot Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorMul, OperatorDiv, OperatorAssign, OperatorAnd, OperatorOr, OperatorMember, OperatorAccessL, OperatorAccessR]
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    $default  reduce using rule 41 (Exp)
+
+    Conflict between rule 41 and token OperatorRelation resolved as reduce (OperatorRelation < OperatorNot).
+    Conflict between rule 41 and token OperatorPlus resolved as reduce (OperatorPlus < OperatorNot).
+    Conflict between rule 41 and token OperatorMinus resolved as reduce (OperatorMinus < OperatorNot).
+    Conflict between rule 41 and token OperatorMul resolved as reduce (OperatorMul < OperatorNot).
+    Conflict between rule 41 and token OperatorDiv resolved as reduce (OperatorDiv < OperatorNot).
+    Conflict between rule 41 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorNot).
+    Conflict between rule 41 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorNot).
+    Conflict between rule 41 and token OperatorOr resolved as reduce (OperatorOr < OperatorNot).
+    Conflict between rule 41 and token OperatorMember resolved as reduce (OperatorMember < OperatorNot).
+    Conflict between rule 41 and token OperatorAccessL resolved as reduce (OperatorAccessL < OperatorNot).
+
+
+State 61
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   43    | OperatorAddr ParLeft . Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 87
+
+
+State 62
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   42    | OperatorDeref ParLeft . Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 88
+
+
+State 63
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   34    | Exp OperatorRelation . Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 89
+
+
+State 64
+
+   11 VariableList: . VarDec
+   12             | . VarDec Comma VariableList
+   13             | . VarDec OperatorAssign Exp Comma VariableList
+   13             | VarDec OperatorAssign Exp Comma . VariableList
+   14 VarDec: . Identifier
+
+    Identifier  shift, and go to state 31
+
+    VariableList  go to state 90
+    VarDec        go to state 16
+
+
+State 65
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   35    | Exp OperatorPlus . Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 91
+
+
+State 66
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   36    | Exp OperatorMinus . Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 92
+
+
+State 67
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   37    | Exp OperatorMul . Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 93
+
+
+State 68
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   38    | Exp OperatorDiv . Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 94
+
+
+State 69
+
+   31 Exp: . Exp OperatorAssign Exp
+   31    | Exp OperatorAssign . Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 95
+
+
+State 70
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   32    | Exp OperatorAnd . Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 96
+
+
+State 71
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   33    | Exp OperatorOr . Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 97
+
+
+State 72
+
+   44 Exp: Exp OperatorMember . Identifier
+
+    Identifier  shift, and go to state 98
+
+
+State 73
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   45    | Exp OperatorAccessL . Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 99
+
+
+State 74
+
+   27 Stmt: CondIf ParLeft . Exp ParRight Stmt
+   28     | CondIf ParLeft . Exp ParRight Stmt CondElse Stmt
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 100
+
+
+State 75
+
+   29 Stmt: LoopWhile ParLeft . Exp ParRight Stmt
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp  go to state 101
+
+
+State 76
+
+   26 Stmt: Return Exp . Semicolon
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    Semicolon         shift, and go to state 102
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 77
+
+   30 Def: Specifier VariableList . Semicolon
+
+    Semicolon  shift, and go to state 103
+
+
+State 78
+
+   20 StmtBlk: BlockLeft StmList BlockRight .
+
+    $default  reduce using rule 20 (StmtBlk)
+
+
+State 79
+
+   22 StmList: Stmt StmList .
+
+    $default  reduce using rule 22 (StmList)
+
+
+State 80
+
+   23 StmList: Def StmList .
+
+    $default  reduce using rule 23 (StmList)
+
+
+State 81
+
+   24 Stmt: Exp Semicolon .
+
+    $default  reduce using rule 24 (Stmt)
+
+
+State 82
+
+   18 ParamList: ParamDec Comma ParamList .
+
+    $default  reduce using rule 18 (ParamList)
+
+
+State 83
+
+   47 Exp: Identifier ParLeft ParRight .
+
+    $default  reduce using rule 47 (Exp)
+
+
+State 84
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+   53 Args: Exp . Comma Args
+   54     | Exp .  [ParRight]
+
+    OperatorRelation  shift, and go to state 63
+    Comma             shift, and go to state 104
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+    $default  reduce using rule 54 (Args)
+
+
+State 85
+
+   46 Exp: Identifier ParLeft Args . ParRight
+
+    ParRight  shift, and go to state 105
+
+
+State 86
+
+   39 Exp: ParLeft Exp ParRight .
+
+    $default  reduce using rule 39 (Exp)
+
+
+State 87
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   43    | OperatorAddr ParLeft Exp . ParRight
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    ParRight          shift, and go to state 106
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 88
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   42    | OperatorDeref ParLeft Exp . ParRight
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    ParRight          shift, and go to state 107
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 89
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   34    | Exp OperatorRelation Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorAssign, OperatorAnd, OperatorOr, OperatorAccessR]
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorPlus     shift, and go to state 65
+    OperatorMinus    shift, and go to state 66
+    OperatorMul      shift, and go to state 67
+    OperatorDiv      shift, and go to state 68
+    OperatorMember   shift, and go to state 72
+    OperatorAccessL  shift, and go to state 73
+
+    $default  reduce using rule 34 (Exp)
+
+    Conflict between rule 34 and token OperatorRelation resolved as reduce (%left OperatorRelation).
+    Conflict between rule 34 and token OperatorPlus resolved as shift (OperatorRelation < OperatorPlus).
+    Conflict between rule 34 and token OperatorMinus resolved as shift (OperatorRelation < OperatorMinus).
+    Conflict between rule 34 and token OperatorMul resolved as shift (OperatorRelation < OperatorMul).
+    Conflict between rule 34 and token OperatorDiv resolved as shift (OperatorRelation < OperatorDiv).
+    Conflict between rule 34 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorRelation).
+    Conflict between rule 34 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorRelation).
+    Conflict between rule 34 and token OperatorOr resolved as reduce (OperatorOr < OperatorRelation).
+    Conflict between rule 34 and token OperatorMember resolved as shift (OperatorRelation < OperatorMember).
+    Conflict between rule 34 and token OperatorAccessL resolved as shift (OperatorRelation < OperatorAccessL).
+
+
+State 90
+
+   13 VariableList: VarDec OperatorAssign Exp Comma VariableList .
+
+    $default  reduce using rule 13 (VariableList)
+
+
+State 91
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   35    | Exp OperatorPlus Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorAssign, OperatorAnd, OperatorOr, OperatorAccessR]
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorMul      shift, and go to state 67
+    OperatorDiv      shift, and go to state 68
+    OperatorMember   shift, and go to state 72
+    OperatorAccessL  shift, and go to state 73
+
+    $default  reduce using rule 35 (Exp)
+
+    Conflict between rule 35 and token OperatorRelation resolved as reduce (OperatorRelation < OperatorPlus).
+    Conflict between rule 35 and token OperatorPlus resolved as reduce (%left OperatorPlus).
+    Conflict between rule 35 and token OperatorMinus resolved as reduce (%left OperatorMinus).
+    Conflict between rule 35 and token OperatorMul resolved as shift (OperatorPlus < OperatorMul).
+    Conflict between rule 35 and token OperatorDiv resolved as shift (OperatorPlus < OperatorDiv).
+    Conflict between rule 35 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorPlus).
+    Conflict between rule 35 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorPlus).
+    Conflict between rule 35 and token OperatorOr resolved as reduce (OperatorOr < OperatorPlus).
+    Conflict between rule 35 and token OperatorMember resolved as shift (OperatorPlus < OperatorMember).
+    Conflict between rule 35 and token OperatorAccessL resolved as shift (OperatorPlus < OperatorAccessL).
+
+
+State 92
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   36    | Exp OperatorMinus Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorAssign, OperatorAnd, OperatorOr, OperatorAccessR]
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorMul      shift, and go to state 67
+    OperatorDiv      shift, and go to state 68
+    OperatorMember   shift, and go to state 72
+    OperatorAccessL  shift, and go to state 73
+
+    $default  reduce using rule 36 (Exp)
+
+    Conflict between rule 36 and token OperatorRelation resolved as reduce (OperatorRelation < OperatorMinus).
+    Conflict between rule 36 and token OperatorPlus resolved as reduce (%left OperatorPlus).
+    Conflict between rule 36 and token OperatorMinus resolved as reduce (%left OperatorMinus).
+    Conflict between rule 36 and token OperatorMul resolved as shift (OperatorMinus < OperatorMul).
+    Conflict between rule 36 and token OperatorDiv resolved as shift (OperatorMinus < OperatorDiv).
+    Conflict between rule 36 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorMinus).
+    Conflict between rule 36 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorMinus).
+    Conflict between rule 36 and token OperatorOr resolved as reduce (OperatorOr < OperatorMinus).
+    Conflict between rule 36 and token OperatorMember resolved as shift (OperatorMinus < OperatorMember).
+    Conflict between rule 36 and token OperatorAccessL resolved as shift (OperatorMinus < OperatorAccessL).
+
+
+State 93
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   37    | Exp OperatorMul Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorMul, OperatorDiv, OperatorAssign, OperatorAnd, OperatorOr, OperatorAccessR]
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorMember   shift, and go to state 72
+    OperatorAccessL  shift, and go to state 73
+
+    $default  reduce using rule 37 (Exp)
+
+    Conflict between rule 37 and token OperatorRelation resolved as reduce (OperatorRelation < OperatorMul).
+    Conflict between rule 37 and token OperatorPlus resolved as reduce (OperatorPlus < OperatorMul).
+    Conflict between rule 37 and token OperatorMinus resolved as reduce (OperatorMinus < OperatorMul).
+    Conflict between rule 37 and token OperatorMul resolved as reduce (%left OperatorMul).
+    Conflict between rule 37 and token OperatorDiv resolved as reduce (%left OperatorDiv).
+    Conflict between rule 37 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorMul).
+    Conflict between rule 37 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorMul).
+    Conflict between rule 37 and token OperatorOr resolved as reduce (OperatorOr < OperatorMul).
+    Conflict between rule 37 and token OperatorMember resolved as shift (OperatorMul < OperatorMember).
+    Conflict between rule 37 and token OperatorAccessL resolved as shift (OperatorMul < OperatorAccessL).
+
+
+State 94
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   38    | Exp OperatorDiv Exp .  [OperatorRelation, ParRight, Semicolon, Comma, OperatorPlus, OperatorMinus, OperatorMul, OperatorDiv, OperatorAssign, OperatorAnd, OperatorOr, OperatorAccessR]
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorMember   shift, and go to state 72
+    OperatorAccessL  shift, and go to state 73
+
+    $default  reduce using rule 38 (Exp)
+
+    Conflict between rule 38 and token OperatorRelation resolved as reduce (OperatorRelation < OperatorDiv).
+    Conflict between rule 38 and token OperatorPlus resolved as reduce (OperatorPlus < OperatorDiv).
+    Conflict between rule 38 and token OperatorMinus resolved as reduce (OperatorMinus < OperatorDiv).
+    Conflict between rule 38 and token OperatorMul resolved as reduce (%left OperatorMul).
+    Conflict between rule 38 and token OperatorDiv resolved as reduce (%left OperatorDiv).
+    Conflict between rule 38 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorDiv).
+    Conflict between rule 38 and token OperatorAnd resolved as reduce (OperatorAnd < OperatorDiv).
+    Conflict between rule 38 and token OperatorOr resolved as reduce (OperatorOr < OperatorDiv).
+    Conflict between rule 38 and token OperatorMember resolved as shift (OperatorDiv < OperatorMember).
+    Conflict between rule 38 and token OperatorAccessL resolved as shift (OperatorDiv < OperatorAccessL).
+
+
+State 95
+
+   31 Exp: Exp . OperatorAssign Exp
+   31    | Exp OperatorAssign Exp .  [ParRight, Semicolon, Comma, OperatorAssign, OperatorAccessR]
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+    $default  reduce using rule 31 (Exp)
+
+    Conflict between rule 31 and token OperatorRelation resolved as shift (OperatorAssign < OperatorRelation).
+    Conflict between rule 31 and token OperatorPlus resolved as shift (OperatorAssign < OperatorPlus).
+    Conflict between rule 31 and token OperatorMinus resolved as shift (OperatorAssign < OperatorMinus).
+    Conflict between rule 31 and token OperatorMul resolved as shift (OperatorAssign < OperatorMul).
+    Conflict between rule 31 and token OperatorDiv resolved as shift (OperatorAssign < OperatorDiv).
+    Conflict between rule 31 and token OperatorAssign resolved as reduce (%left OperatorAssign).
+    Conflict between rule 31 and token OperatorAnd resolved as shift (OperatorAssign < OperatorAnd).
+    Conflict between rule 31 and token OperatorOr resolved as shift (OperatorAssign < OperatorOr).
+    Conflict between rule 31 and token OperatorMember resolved as shift (OperatorAssign < OperatorMember).
+    Conflict between rule 31 and token OperatorAccessL resolved as shift (OperatorAssign < OperatorAccessL).
+
+
+State 96
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   32    | Exp OperatorAnd Exp .  [ParRight, Semicolon, Comma, OperatorAssign, OperatorAnd, OperatorOr, OperatorAccessR]
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+    $default  reduce using rule 32 (Exp)
+
+    Conflict between rule 32 and token OperatorRelation resolved as shift (OperatorAnd < OperatorRelation).
+    Conflict between rule 32 and token OperatorPlus resolved as shift (OperatorAnd < OperatorPlus).
+    Conflict between rule 32 and token OperatorMinus resolved as shift (OperatorAnd < OperatorMinus).
+    Conflict between rule 32 and token OperatorMul resolved as shift (OperatorAnd < OperatorMul).
+    Conflict between rule 32 and token OperatorDiv resolved as shift (OperatorAnd < OperatorDiv).
+    Conflict between rule 32 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorAnd).
+    Conflict between rule 32 and token OperatorAnd resolved as reduce (%left OperatorAnd).
+    Conflict between rule 32 and token OperatorOr resolved as reduce (OperatorOr < OperatorAnd).
+    Conflict between rule 32 and token OperatorMember resolved as shift (OperatorAnd < OperatorMember).
+    Conflict between rule 32 and token OperatorAccessL resolved as shift (OperatorAnd < OperatorAccessL).
+
+
+State 97
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   33    | Exp OperatorOr Exp .  [ParRight, Semicolon, Comma, OperatorAssign, OperatorOr, OperatorAccessR]
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAnd       shift, and go to state 70
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+    $default  reduce using rule 33 (Exp)
+
+    Conflict between rule 33 and token OperatorRelation resolved as shift (OperatorOr < OperatorRelation).
+    Conflict between rule 33 and token OperatorPlus resolved as shift (OperatorOr < OperatorPlus).
+    Conflict between rule 33 and token OperatorMinus resolved as shift (OperatorOr < OperatorMinus).
+    Conflict between rule 33 and token OperatorMul resolved as shift (OperatorOr < OperatorMul).
+    Conflict between rule 33 and token OperatorDiv resolved as shift (OperatorOr < OperatorDiv).
+    Conflict between rule 33 and token OperatorAssign resolved as reduce (OperatorAssign < OperatorOr).
+    Conflict between rule 33 and token OperatorAnd resolved as shift (OperatorOr < OperatorAnd).
+    Conflict between rule 33 and token OperatorOr resolved as reduce (%left OperatorOr).
+    Conflict between rule 33 and token OperatorMember resolved as shift (OperatorOr < OperatorMember).
+    Conflict between rule 33 and token OperatorAccessL resolved as shift (OperatorOr < OperatorAccessL).
+
+
+State 98
+
+   44 Exp: Exp OperatorMember Identifier .
+
+    $default  reduce using rule 44 (Exp)
+
+
+State 99
+
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+   45    | Exp OperatorAccessL Exp . OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+    OperatorAccessR   shift, and go to state 108
+
+
+State 100
+
+   27 Stmt: CondIf ParLeft Exp . ParRight Stmt
+   28     | CondIf ParLeft Exp . ParRight Stmt CondElse Stmt
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    ParRight          shift, and go to state 109
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 101
+
+   29 Stmt: LoopWhile ParLeft Exp . ParRight Stmt
+   31 Exp: Exp . OperatorAssign Exp
+   32    | Exp . OperatorAnd Exp
+   33    | Exp . OperatorOr Exp
+   34    | Exp . OperatorRelation Exp
+   35    | Exp . OperatorPlus Exp
+   36    | Exp . OperatorMinus Exp
+   37    | Exp . OperatorMul Exp
+   38    | Exp . OperatorDiv Exp
+   44    | Exp . OperatorMember Identifier
+   45    | Exp . OperatorAccessL Exp OperatorAccessR
+
+    OperatorRelation  shift, and go to state 63
+    ParRight          shift, and go to state 110
+    OperatorPlus      shift, and go to state 65
+    OperatorMinus     shift, and go to state 66
+    OperatorMul       shift, and go to state 67
+    OperatorDiv       shift, and go to state 68
+    OperatorAssign    shift, and go to state 69
+    OperatorAnd       shift, and go to state 70
+    OperatorOr        shift, and go to state 71
+    OperatorMember    shift, and go to state 72
+    OperatorAccessL   shift, and go to state 73
+
+
+State 102
+
+   26 Stmt: Return Exp Semicolon .
+
+    $default  reduce using rule 26 (Stmt)
+
+
+State 103
+
+   30 Def: Specifier VariableList Semicolon .
+
+    $default  reduce using rule 30 (Def)
+
+
+State 104
+
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+   53 Args: . Exp Comma Args
+   53     | Exp Comma . Args
+   54     | . Exp
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    Exp   go to state 84
+    Args  go to state 111
+
+
+State 105
+
+   46 Exp: Identifier ParLeft Args ParRight .
+
+    $default  reduce using rule 46 (Exp)
+
+
+State 106
+
+   43 Exp: OperatorAddr ParLeft Exp ParRight .
+
+    $default  reduce using rule 43 (Exp)
+
+
+State 107
+
+   42 Exp: OperatorDeref ParLeft Exp ParRight .
+
+    $default  reduce using rule 42 (Exp)
+
+
+State 108
+
+   45 Exp: Exp OperatorAccessL Exp OperatorAccessR .
+
+    $default  reduce using rule 45 (Exp)
+
+
+State 109
+
+   20 StmtBlk: . BlockLeft StmList BlockRight
+   24 Stmt: . Exp Semicolon
+   25     | . StmtBlk
+   26     | . Return Exp Semicolon
+   27     | . CondIf ParLeft Exp ParRight Stmt
+   27     | CondIf ParLeft Exp ParRight . Stmt
+   28     | . CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   28     | CondIf ParLeft Exp ParRight . Stmt CondElse Stmt
+   29     | . LoopWhile ParLeft Exp ParRight Stmt
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    BlockLeft       shift, and go to state 23
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    CondIf          shift, and go to state 44
+    LoopWhile       shift, and go to state 45
+    Return          shift, and go to state 46
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    StmtBlk  go to state 48
+    Stmt     go to state 112
+    Exp      go to state 52
+
+
+State 110
+
+   20 StmtBlk: . BlockLeft StmList BlockRight
+   24 Stmt: . Exp Semicolon
+   25     | . StmtBlk
+   26     | . Return Exp Semicolon
+   27     | . CondIf ParLeft Exp ParRight Stmt
+   28     | . CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   29     | . LoopWhile ParLeft Exp ParRight Stmt
+   29     | LoopWhile ParLeft Exp ParRight . Stmt
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    BlockLeft       shift, and go to state 23
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    CondIf          shift, and go to state 44
+    LoopWhile       shift, and go to state 45
+    Return          shift, and go to state 46
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    StmtBlk  go to state 48
+    Stmt     go to state 113
+    Exp      go to state 52
+
+
+State 111
+
+   53 Args: Exp Comma Args .
+
+    $default  reduce using rule 53 (Args)
+
+
+State 112
+
+   27 Stmt: CondIf ParLeft Exp ParRight Stmt .  [LiteralInteger, Identifier, IdentifierType, LiteralFloat, LiteralString, LiteralChar, ParLeft, BlockLeft, BlockRight, OperatorMinus, OperatorNot, CondIf, LoopWhile, Return, OperatorAddr, OperatorDeref, AsArray, AsPointer]
+   28     | CondIf ParLeft Exp ParRight Stmt . CondElse Stmt
+
+    CondElse  shift, and go to state 114
+
+    $default  reduce using rule 27 (Stmt)
+
+    Conflict between rule 27 and token CondElse resolved as shift (CondIfTrue < CondElse).
+
+
+State 113
+
+   29 Stmt: LoopWhile ParLeft Exp ParRight Stmt .
+
+    $default  reduce using rule 29 (Stmt)
+
+
+State 114
+
+   20 StmtBlk: . BlockLeft StmList BlockRight
+   24 Stmt: . Exp Semicolon
+   25     | . StmtBlk
+   26     | . Return Exp Semicolon
+   27     | . CondIf ParLeft Exp ParRight Stmt
+   28     | . CondIf ParLeft Exp ParRight Stmt CondElse Stmt
+   28     | CondIf ParLeft Exp ParRight Stmt CondElse . Stmt
+   29     | . LoopWhile ParLeft Exp ParRight Stmt
+   31 Exp: . Exp OperatorAssign Exp
+   32    | . Exp OperatorAnd Exp
+   33    | . Exp OperatorOr Exp
+   34    | . Exp OperatorRelation Exp
+   35    | . Exp OperatorPlus Exp
+   36    | . Exp OperatorMinus Exp
+   37    | . Exp OperatorMul Exp
+   38    | . Exp OperatorDiv Exp
+   39    | . ParLeft Exp ParRight
+   40    | . OperatorMinus Exp
+   41    | . OperatorNot Exp
+   42    | . OperatorDeref ParLeft Exp ParRight
+   43    | . OperatorAddr ParLeft Exp ParRight
+   44    | . Exp OperatorMember Identifier
+   45    | . Exp OperatorAccessL Exp OperatorAccessR
+   46    | . Identifier ParLeft Args ParRight
+   47    | . Identifier ParLeft ParRight
+   48    | . Identifier
+   49    | . LiteralInteger
+   50    | . LiteralFloat
+   51    | . LiteralString
+   52    | . LiteralChar
+
+    LiteralInteger  shift, and go to state 33
+    Identifier      shift, and go to state 34
+    LiteralFloat    shift, and go to state 35
+    LiteralString   shift, and go to state 36
+    LiteralChar     shift, and go to state 37
+    ParLeft         shift, and go to state 38
+    BlockLeft       shift, and go to state 23
+    OperatorMinus   shift, and go to state 39
+    OperatorNot     shift, and go to state 40
+    CondIf          shift, and go to state 44
+    LoopWhile       shift, and go to state 45
+    Return          shift, and go to state 46
+    OperatorAddr    shift, and go to state 41
+    OperatorDeref   shift, and go to state 42
+
+    StmtBlk  go to state 48
+    Stmt     go to state 115
+    Exp      go to state 52
+
+
+State 115
+
+   28 Stmt: CondIf ParLeft Exp ParRight Stmt CondElse Stmt .
+
+    $default  reduce using rule 28 (Stmt)

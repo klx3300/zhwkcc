@@ -1,0 +1,16 @@
+cc(gcc)
+cxx(g++)
+
+macro(cflags, -g -std=gnu11)
+macro(cxxflags, -g -std=gnu++14)
+
+object(cxx, format/format.cc, cxxflags, fmt)
+object(cxx, lexical/mini_c.lex.cc, cxxflags, lex)
+object(cxx, semantic/ast.cc, cxxflags, ast)
+object(cxx, semantic/mini_c.sem.cc, cxxflags, semantic)
+object(cxx, utility/utility.cc, cxxflags, util)
+
+object(cxx, main.cc, cxxflags, main)
+
+executable(cxx, zhwkcc, , main, util, fmt, lex, ast, semantic)
+default(zhwkcc)
