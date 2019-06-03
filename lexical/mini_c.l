@@ -18,17 +18,17 @@ using namespace std;
 %option yylineno
 %option noyywrap
 
-identifier   [A-Za-z][A-Za-z0-9]*
+identifier   [A-Za-z]([A-Za-z0-9]|_)*
 literal_int    [0-9]+
 literal_float  ([0-9]*\.[0-9]+)|([0-9]+\.)
-literal_string ".*"
+literal_string \".*\"
 /*literal_char '((.)|(\\[n]))'*/
 literal_char '(.)'
 
 
 %%
 {literal_int}        {yylval.literal_int = string_to_integer(string(yytext)); return LiteralInteger;}
-{literal_float}      {yylval.literal_int = string_to_double(string(yytext)); return LiteralFloat;}
+{literal_float}      {yylval.literal_float = string_to_double(string(yytext)); return LiteralFloat;}
 {literal_string}     {yylval.literal_string = string(yytext); return LiteralString;}
 {literal_char}  {yylval.literal_string = string(yytext); return LiteralChar;}
 "char"  {yylval.identifier = string(yytext); return IdentifierType;}
@@ -42,6 +42,8 @@ literal_char '(.)'
 "if"         {return CondIf;}
 "else"       {return CondElse;}
 "while"      {return LoopWhile;}
+"break" {return LoopBreak;}
+"continue" {return LoopContinue;}
 
  /* identifier alike operators. */
 

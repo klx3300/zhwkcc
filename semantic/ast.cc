@@ -3,38 +3,6 @@
 
 using namespace std;
 
-const char* ASTNodeTypeStr[] = {
-    "Invalid",
-    "MasterList",
-    "GlobalVariable",
-    "FuncDeclaration",
-    "FuncDefinition",
-    "TypeSpecification",
-    "VariableDeclaration",
-    "VariableName",
-    "ComplexType",
-    "FuncPrototype",
-    "ParameterList",
-    "Parameter",
-    "StatementBlock",
-    "StatementList",
-    "Expression",
-    "Return",
-    "CondIfTrue",
-    "CondIf",
-    "LoopWhile",
-    "VariableDefinition",
-    "Initializer",
-    "Operator",
-    "Call",
-    "Identifier",
-    "LiteralInteger",
-    "LiteralFloat",
-    "LiteralString",
-    "ArgumentList",
-    "IndexAccess"
-    "!!!PROTECT!!!"
-};
 
 static inline void DumpWordType(WordType wt) {
     if(wt.identifier != "") {

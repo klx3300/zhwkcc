@@ -6,8 +6,6 @@
 #include <string>
 #include <sstream>
 
-namespace polar_race{
-
 #define Q_ESCAPE_CHAR "\x1b"
 #define Q_FMT_APPLY(x) Q_ESCAPE_CHAR x
 
@@ -31,8 +29,6 @@ void qfmtClearColor();
 #define qfmtColorizer(prefix, colored, suffix, color) qfmtColorizerF(stdout,prefix,colored,suffix,color)
 
 void qfmtColorizerF(FILE *dstfile, const char *prefix, const char *colored, const char *suffix, const char *color);
-
-};
 
 
 #endif

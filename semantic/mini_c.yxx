@@ -27,7 +27,7 @@ void yyerror(const char* fmt, ...);
 
 
 //  %type 定义非终结符的语义值类型
-%type  <astnode> program ExtDefList ExtDef Specifier FuncDec StmtBlk ParamList VarDec ParamDec Stmt StmList Def VariableList Exp Args
+%type  <astnode> program ExtDefList ExtDef Specifier FuncDec StmtBlk ParamList VarDec ParamDec Stmt StmList Def VariableList Exp Args InitList
 
 //% token 定义终结符的语义值类型
 %token <literal_int> LiteralInteger              //指定INT的语义值是type_int，有词法分析得到的数值
@@ -41,8 +41,11 @@ void yyerror(const char* fmt, ...);
 %token OperatorAddr OperatorDeref OperatorMember
 %token OperatorAccessL OperatorAccessR
 %token AsArray AsPointer
+%token LoopBreak LoopContinue
 
+%nonassoc ParLeft ParRight
 %left OperatorAssign
+%nonassoc InitializerList
 %left OperatorOr
 %left OperatorAnd
 %left OperatorRelation
@@ -84,8 +87,7 @@ ExtDef:
     | error Semicolon {$$=NULL;}
     ;
 
-Specifier: IdentifierType {
-        $$=new ASTNode(TYPE_TYPESPEC,NULL,NULL,NULL,yylineno);
+Specifier: IdentifierType { $$=new ASTNode(TYPE_TYPESPEC,NULL,NULL,NULL,yylineno);
         $$->data.identifier = string($1);
     }
     | AsArray ParLeft LiteralInteger ParRight Specifier {
@@ -101,6 +103,9 @@ Specifier: IdentifierType {
 
 VariableList:
     VarDec {$$=$1;}
+    | VarDec OperatorAssign Exp {
+        $$=new ASTNode(TYPE_INITIALIZER,$1,$3,NULL,yylineno);
+    }
     | VarDec Comma VariableList {
         $$=new ASTNode(TYPE_VAR_DECLIST,$1,$3,NULL,yylineno);
     }
@@ -158,6 +163,12 @@ Stmt:
         $$=new ASTNode(TYPE_EXPR,$1,NULL,NULL,yylineno);
     }
     | StmtBlk {$$=$1;}
+    | LoopBreak Semicolon {
+        $$=new ASTNode(TYPE_BREAK, NULL, NULL, NULL, yylineno);
+    }
+    | LoopContinue Semicolon {
+        $$=new ASTNode(TYPE_CONTINUE, NULL, NULL, NULL, yylineno);
+    }
     | Return Exp Semicolon {
         $$=new ASTNode(TYPE_RETURN,$2,NULL,NULL,yylineno);
     }
@@ -181,6 +192,13 @@ Def: Specifier VariableList Semicolon {
         $$=new ASTNode(TYPE_VARDEF,$1,$2,NULL,yylineno);
     }
     ;
+
+InitList: Exp Comma InitList {
+        $$=new ASTNode(TYPE_INITLIST, $1, $3, NULL, yylineno);
+    }
+    | Exp {
+        $$ = $1;
+    }
 
 Exp:
     Exp OperatorAssign Exp {
@@ -240,13 +258,14 @@ Exp:
     | Exp OperatorAccessL Exp OperatorAccessR %prec OperatorAccess {
         $$=new ASTNode(TYPE_ACCESS,$1,$3,NULL,yylineno);
     }
-    | Identifier ParLeft Args ParRight {
-        $$=new ASTNode(TYPE_CALL,$3,NULL,NULL,yylineno);
-        $$->data.identifier = string($1);
+    | Exp ParLeft Args ParRight {
+        $$=new ASTNode(TYPE_CALL,$1,$3,NULL,yylineno);
     }
-    | Identifier ParLeft ParRight {
-        $$=new ASTNode(TYPE_CALL,NULL,NULL,NULL,yylineno);
-        $$->data.identifier = string($1);
+    | Exp ParLeft ParRight {
+        $$=new ASTNode(TYPE_CALL,$1,NULL,NULL,yylineno);
+    }
+    | OperatorAccessL InitList OperatorAccessR  %prec InitializerList {
+        $$=$2;
     }
     | Identifier {
         $$=new ASTNode(TYPE_IDENTIFIER,NULL,NULL,NULL,yylineno);

@@ -33,10 +33,47 @@ enum ASTNodeType {
     TYPE_LITERAL_STRING,
     TYPE_ARGLIST,
     TYPE_ACCESS,
+    TYPE_BREAK,
+    TYPE_CONTINUE,
+    TYPE_INITLIST,
     TYPE_COUNT // this is the guard, add types before this!
 };
 
-extern const char* ASTNodeTypeStr[];
+static const char* ASTNodeTypeStr[] = {
+    "Invalid",
+    "MasterList",
+    "GlobalVariable",
+    "FuncDeclaration",
+    "FuncDefinition",
+    "TypeSpecification",
+    "VariableDeclaration",
+    "VariableName",
+    "ComplexType",
+    "FuncPrototype",
+    "ParameterList",
+    "Parameter",
+    "StatementBlock",
+    "StatementList",
+    "Expression",
+    "Return",
+    "CondIfTrue",
+    "CondIf",
+    "LoopWhile",
+    "VariableDefinition",
+    "Initializer",
+    "Operator",
+    "Call",
+    "Identifier",
+    "LiteralInteger",
+    "LiteralFloat",
+    "LiteralString",
+    "ArgumentList",
+    "IndexAccess",
+    "BreakClause",
+    "ContinueClause",
+    "InitializerList",
+    "!!!PROTECT!!!"
+};
 
 struct ASTNode {
     ASTNodeType type;

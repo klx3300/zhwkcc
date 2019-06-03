@@ -81,9 +81,12 @@ extern int yydebug;
     OperatorAccessR = 287,
     AsArray = 288,
     AsPointer = 289,
-    OperatorAccess = 290,
-    OperatorUnaryMinus = 291,
-    CondIfTrue = 292
+    LoopBreak = 290,
+    LoopContinue = 291,
+    InitializerList = 292,
+    OperatorAccess = 293,
+    OperatorUnaryMinus = 294,
+    CondIfTrue = 295
   };
 #endif
 
