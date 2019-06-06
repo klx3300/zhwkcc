@@ -4,6 +4,7 @@
 // Global variables
 
 int glbl_int;
+int glbl_lst0, glbl_lst1, glbl_lst2, glbl_lst3;
 
 // Global variables with list & initializers, literals
 
@@ -27,17 +28,16 @@ pointer array(40) string glbl_ptrstrarr;
 
 array(5) pointer string glbl_arrptrstr;
 
-// initializer lists
-array(5) int init_ints = [0, 2, 4, 6, 8];
-
 // functions
 
 int func_a();
 
-int func_b(int param_a);
+int func_c(int a);
 
-// main function
-int main(){
+pointer int func_b(int param_a, float param_b, string param_c, pointer int param_d);
+
+// main function, supports command line arguments
+int main(pointer string args){
     // access op
     glbl_intarr[0] = 1;
     // member op
@@ -60,7 +60,7 @@ int func_a() {
     return sum;
 }
 
-int func_b(int param_a) {
+int func_b(int param_a, float param_b, string param_c, pointer int param_d){
     // if clause test
     if(param_a < 0) {
         return -1;

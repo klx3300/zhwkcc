@@ -37,6 +37,7 @@ literal_char '(.)'
 "string"    {yylval.identifier = string(yytext); return IdentifierType;}
 "pointer" {yylval.identifier = string(yytext); return AsPointer;}
 "array" {yylval.identifier = string(yytext); return AsArray;}
+"nullptr" {yylval.identifier = string(yytext); return LiteralNullptr;}
 
 "return"     {return Return;}
 "if"         {return CondIf;}

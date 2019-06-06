@@ -15,6 +15,12 @@ union Operand {
     uint32_t as_imm;
 };
 
+static inline Operand VariableOperand(VariableReference vr){
+    Operand op;
+    op.as_var = vr;
+    return op;
+}
+
 static inline Operand VariableOperand(uint16_t scope, uint16_t varid) {
     Operand op;
     op.as_var.scope = scope;
@@ -35,6 +41,13 @@ struct InstructionFormat {
     Operand dest;
     InstructionFormat();
     InstructionFormat(uint8_t op, Operand sA, Operand sB, Operand dst);
+};
+
+enum InstructionTypeOperand {
+    ITYPE_INTEGER = 0,
+    ITYPE_FLOAT,
+    ITYPE_STRING,
+    ITYPE_POINTER
 };
 
 enum OpCodes {
@@ -70,7 +83,19 @@ enum OpCodes {
     OP_STORE,
     OP_ALLOC,
     OP_FREE,
-    OP_RELOC
+    OP_RELOC,
+    OP_NULLIFY,
+    OP_AND,
+    OP_OR,
+    OP_NOT,
+    OP_BWAND,
+    OP_BWOR,
+    OP_BWNOT,
+    OP_BWXOR,
+    OP_ARRRESET,
+    OP_BREAK,
+    OP_CONTINUE,
+    OP_COUNT_GUARD
 };
 
 static const char* OpNames[] = {
@@ -106,7 +131,19 @@ static const char* OpNames[] = {
     "store",
     "alloc",
     "free",
-    "reloc"
+    "reloc",
+    "nullify",
+    "and",
+    "or",
+    "not",
+    "bwand",
+    "bwor",
+    "bwnot",
+    "bwxor",
+    "arrreset",
+    "break",
+    "continue",
+    "!!Opcode Counts!!"
 };
 
 

@@ -1,5 +1,6 @@
 #include "idtable.hpp"
 #include "../format/log.hpp"
+#include <cstdlib>
 
 using namespace std;
 
@@ -16,25 +17,33 @@ static inline uint16_t REAL_SCOPE(uint16_t currsc){
 IdTable::IdTable() {
     curr_scope = 1;
     curr_varid = 0;
-    scope_variables.push_back(unordered_map<string, uint16_t>());
+    scope_variables.push_back(unordered_map<string, VariableSignature>());
     scope_varid.push_back(0);
 }
 
 void IdTable::scope_push() {
     curr_scope++;
+    if(curr_scope >= 65534) {
+        qLogFail("Semantic Analyser: Too deep scope wraps.\n");
+        abort();
+    }
     curr_varid = 0;
-    scope_variables.push_back(unordered_map<string, uint16_t>());
+    scope_variables.push_back(unordered_map<string, VariableSignature>());
     scope_varid.push_back(0);
 }
 
 void IdTable::scope_pop() {
+    if(curr_scope == 1) {
+        qLogFail("Semantic Analyser: Object Generator is trying to remove the global scope. Aborting...\n");
+        abort();
+    }
     curr_scope--;
     scope_variables.pop_back();
     scope_varid.pop_back();
     curr_varid = VECLAST(scope_varid);
 }
 
-VariableReference IdTable::define_variable(string ident, bool& succ){
+VariableReference IdTable::define_variable(string ident, list<TypeSignature> type, bool& succ){
     auto& csvariables = VECLAST(scope_variables);
     if(csvariables.find(ident) != csvariables.end()) {
         qLogFailfmt("Semantic Analyser: Variable %s redefined in current scope.\n",
@@ -45,19 +54,24 @@ VariableReference IdTable::define_variable(string ident, bool& succ){
     succ = true;
     curr_varid ++;
     VECLAST(scope_varid) = curr_varid;
-    csvariables[ident] = curr_varid - 1;
-    return VariableOperand(VREF_CURRSCOPE, curr_varid - 1).as_var;
+    VariableSignature vs;
+    vs.varid = curr_varid - 1;
+    vs.vartype = type;
+    csvariables[ident] = vs;
+    return VariableOperand(curr_scope, curr_varid - 1).as_var;
 }
 
-VariableReference IdTable::get_variable(string ident, bool& succ){
+VariableReference IdTable::get_variable(string ident, list<TypeSignature>* type, bool& succ){
     VariableReference vref;
     bool found = false;
     for(int i = REAL_SCOPE(this); i >= 0; i--){
         auto& vars = scope_variables[i];
         if(vars.find(ident) != vars.end()){
             found = true;
-            vref.varid = vars[ident];
+            VariableSignature vs = vars[ident];
+            vref.varid = vs.varid;
             vref.scope = i + 1;
+            if(type != NULL) *type = vs.vartype;
         }
     }
     if(!found){
@@ -82,3 +96,20 @@ VariableReference IdTable::define_literal(LiteralValue lival, bool& succ){
     return VariableOperand(0, lival.varid).as_var;
 }
 
+TypeSignature NewTypeSignature(uint8_t btype){
+    TypeSignature ts;
+    ts.basetype = btype;
+    ts.arraysize = 0;
+    return ts;
+}
+
+TypeSignature NewTypeSignature(uint8_t btype, uint32_t arsize){
+    TypeSignature ts;
+    if(btype != VTYPE_ARRAY) {
+        qLogFail("AssertionError: TypeSignature should be array type when calling array type ctor.\n");
+        abort();
+    }
+    ts.basetype = btype;
+    ts.arraysize = arsize;
+    return ts;
+}

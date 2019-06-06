@@ -34,6 +34,7 @@ void yyerror(const char* fmt, ...);
 %token <identifier> Identifier OperatorRelation IdentifierType  //指定Identifier,RELOP 的语义值是type_Identifier，有词法分析得到的标识符字符串
 %token <literal_float> LiteralFloat
 %token <literal_string> LiteralString LiteralChar
+%token <identifier> LiteralNullptr
 %token ParLeft ParRight BlockLeft BlockRight Semicolon Comma   //用bison对该文件编译时，带参数-d，生成的exp.tab.h中给这些单词进行编码，可在lex.l中包含parser.tab.h使用这些单词种类码
 %token OperatorPlus OperatorMinus OperatorMul OperatorDiv
 %token OperatorAssign OperatorAnd OperatorOr OperatorNot
@@ -211,7 +212,7 @@ Exp:
     }
     | Exp OperatorOr Exp {
         $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
-        $$->data.identifier = string("OR");
+        $$->data.identifier = string("or");
     }
     | Exp OperatorRelation Exp {
         $$=new ASTNode(TYPE_OPERATOR,$1,$3,NULL,yylineno);
@@ -286,6 +287,9 @@ Exp:
     | LiteralChar {
         $$=new ASTNode(TYPE_LITERAL_INTEGER,NULL,NULL,NULL,yylineno);
         $$->data.literal_int=extract_from_char_string($1);
+    }
+    | LiteralNullptr {
+        $$=new ASTNode(
     }
     ;
 

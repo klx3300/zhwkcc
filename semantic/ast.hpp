@@ -36,6 +36,7 @@ enum ASTNodeType {
     TYPE_BREAK,
     TYPE_CONTINUE,
     TYPE_INITLIST,
+    TYPE_NULLPTR,
     TYPE_COUNT // this is the guard, add types before this!
 };
 
@@ -72,6 +73,7 @@ static const char* ASTNodeTypeStr[] = {
     "BreakClause",
     "ContinueClause",
     "InitializerList",
+    "LiteralNullptr",
     "!!!PROTECT!!!"
 };
 

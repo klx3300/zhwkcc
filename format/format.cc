@@ -2,8 +2,6 @@
 #include <string>
 #include <cstdint>
 
-namespace polar_race{
-
 std::mutex logMu;
 
 void qfmtColor(const char *c) {
@@ -31,6 +29,4 @@ std::string KVArrayDump(const char* arr, size_t len){
     }
     return s;
 }
-
-};
 

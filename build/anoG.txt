@@ -1,0 +1,196 @@
+// Header
+typedef void (*NodeOperatorFuncType)(ASTNode* node, Generator& G);
+void NodeOpInvalid(ASTNode* node, Generator& G);
+void NodeOpMasterList(ASTNode* node, Generator& G);
+void NodeOpGlobalVariable(ASTNode* node, Generator& G);
+void NodeOpFuncDeclaration(ASTNode* node, Generator& G);
+void NodeOpFuncDefinition(ASTNode* node, Generator& G);
+void NodeOpTypeSpecification(ASTNode* node, Generator& G);
+void NodeOpVariableDeclaration(ASTNode* node, Generator& G);
+void NodeOpVariableName(ASTNode* node, Generator& G);
+void NodeOpComplexType(ASTNode* node, Generator& G);
+void NodeOpFuncPrototype(ASTNode* node, Generator& G);
+void NodeOpParameterList(ASTNode* node, Generator& G);
+void NodeOpParameter(ASTNode* node, Generator& G);
+void NodeOpStatementBlock(ASTNode* node, Generator& G);
+void NodeOpStatementList(ASTNode* node, Generator& G);
+void NodeOpExpression(ASTNode* node, Generator& G);
+void NodeOpReturn(ASTNode* node, Generator& G);
+void NodeOpCondIfTrue(ASTNode* node, Generator& G);
+void NodeOpCondIf(ASTNode* node, Generator& G);
+void NodeOpLoopWhile(ASTNode* node, Generator& G);
+void NodeOpVariableDefinition(ASTNode* node, Generator& G);
+void NodeOpInitializer(ASTNode* node, Generator& G);
+void NodeOpOperator(ASTNode* node, Generator& G);
+void NodeOpCall(ASTNode* node, Generator& G);
+void NodeOpIdentifier(ASTNode* node, Generator& G);
+void NodeOpLiteralInteger(ASTNode* node, Generator& G);
+void NodeOpLiteralFloat(ASTNode* node, Generator& G);
+void NodeOpLiteralString(ASTNode* node, Generator& G);
+void NodeOpArgumentList(ASTNode* node, Generator& G);
+void NodeOpIndexAccess(ASTNode* node, Generator& G);
+void NodeOpBreakClause(ASTNode* node, Generator& G);
+void NodeOpContinueClause(ASTNode* node, Generator& G);
+void NodeOpInitializerList(ASTNode* node, Generator& G);
+const static NodeOperatorFuncType NodeOperators[] = { 
+    NodeOpInvalid,
+    NodeOpMasterList,
+    NodeOpGlobalVariable,
+    NodeOpFuncDeclaration,
+    NodeOpFuncDefinition,
+    NodeOpTypeSpecification,
+    NodeOpVariableDeclaration,
+    NodeOpVariableName,
+    NodeOpComplexType,
+    NodeOpFuncPrototype,
+    NodeOpParameterList,
+    NodeOpParameter,
+    NodeOpStatementBlock,
+    NodeOpStatementList,
+    NodeOpExpression,
+    NodeOpReturn,
+    NodeOpCondIfTrue,
+    NodeOpCondIf,
+    NodeOpLoopWhile,
+    NodeOpVariableDefinition,
+    NodeOpInitializer,
+    NodeOpOperator,
+    NodeOpCall,
+    NodeOpIdentifier,
+    NodeOpLiteralInteger,
+    NodeOpLiteralFloat,
+    NodeOpLiteralString,
+    NodeOpArgumentList,
+    NodeOpIndexAccess,
+    NodeOpBreakClause,
+    NodeOpContinueClause,
+    NodeOpInitializerList,
+};// FastDefs
+void NodeOpInvalid(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpMasterList(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpGlobalVariable(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpFuncDeclaration(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpFuncDefinition(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpTypeSpecification(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpVariableDeclaration(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpVariableName(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpComplexType(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpFuncPrototype(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpParameterList(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpParameter(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpStatementBlock(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpStatementList(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpExpression(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpReturn(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpCondIfTrue(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpCondIf(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpLoopWhile(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpVariableDefinition(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpInitializer(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpOperator(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpCall(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpIdentifier(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpLiteralInteger(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpLiteralFloat(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpLiteralString(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpArgumentList(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpIndexAccess(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpBreakClause(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpContinueClause(ASTNode* node, Generator& G){
+
+}
+
+void NodeOpInitializerList(ASTNode* node, Generator& G){
+
+}
+

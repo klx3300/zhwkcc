@@ -2,6 +2,12 @@
 
 using namespace std;
 
+string uint_to_string(uint32_t u) {
+    char tmp[40] = {0};
+    sprintf(tmp, "%u", u);
+    return string(tmp);
+}
+
 int string_to_integer(string str){
     int tmpresint = 0;
     sscanf(str.c_str(), "%d", &tmpresint);

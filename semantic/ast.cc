@@ -1,5 +1,6 @@
 #include "ast.hpp"
 #include <iostream>
+#include "../object/generator.hpp"
 
 using namespace std;
 
@@ -28,8 +29,7 @@ ASTNode::ASTNode() {
     lineno = -1;
 }
 
-ASTNode::ASTNode(ASTNodeType typ,
-            ASTNode* chld0, ASTNode* chld1, ASTNode* chld2,
+ASTNode::ASTNode(ASTNodeType typ, ASTNode* chld0, ASTNode* chld1, ASTNode* chld2,
             int lnumber){
     type = typ;
     childs[0] = chld0;
