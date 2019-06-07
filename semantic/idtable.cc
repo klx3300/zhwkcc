@@ -24,7 +24,7 @@ IdTable::IdTable() {
 void IdTable::scope_push() {
     curr_scope++;
     if(curr_scope >= 65534) {
-        qLogFail("Semantic Analyser: Too deep scope wraps.\n");
+        qLogFail("Semantic Analyser: Too deep scope wraps.");
         abort();
     }
     curr_varid = 0;
@@ -34,7 +34,7 @@ void IdTable::scope_push() {
 
 void IdTable::scope_pop() {
     if(curr_scope == 1) {
-        qLogFail("Semantic Analyser: Object Generator is trying to remove the global scope. Aborting...\n");
+        qLogFail("Semantic Analyser: Object Generator is trying to remove the global scope. Aborting...");
         abort();
     }
     curr_scope--;
@@ -43,10 +43,11 @@ void IdTable::scope_pop() {
     curr_varid = VECLAST(scope_varid);
 }
 
+
 VariableReference IdTable::define_variable(string ident, list<TypeSignature> type, bool& succ){
     auto& csvariables = VECLAST(scope_variables);
     if(csvariables.find(ident) != csvariables.end()) {
-        qLogFailfmt("Semantic Analyser: Variable %s redefined in current scope.\n",
+        qLogFailfmt("Semantic Analyser: Variable %s redefined in current scope.",
                 ident.c_str());
         succ = false;
         return VariableReference();
@@ -58,6 +59,8 @@ VariableReference IdTable::define_variable(string ident, list<TypeSignature> typ
     vs.varid = curr_varid - 1;
     vs.vartype = type;
     csvariables[ident] = vs;
+    qLogDebugfmt("IDTable: defining %s%s as %hu:%hu", TypeSignaturePrinter(type).c_str(),
+            ident.c_str(), curr_scope, vs.varid);
     return VariableOperand(curr_scope, curr_varid - 1).as_var;
 }
 
@@ -75,7 +78,7 @@ VariableReference IdTable::get_variable(string ident, list<TypeSignature>* type,
         }
     }
     if(!found){
-        qLogFailfmt("Semantic Analyser: Variable %s undefined.\n",
+        qLogFailfmt("Semantic Analyser: Variable %s undefined.",
                 ident.c_str());
         succ = false;
     } else {
@@ -87,7 +90,7 @@ VariableReference IdTable::get_variable(string ident, list<TypeSignature>* type,
 VariableReference IdTable::define_literal(LiteralValue lival, bool& succ){
     lival.varid = literals.size();
     if(lival.varid >= 65535){
-        qLogFail("Semantic Analyser: Too many literals.\n");
+        qLogFail("Semantic Analyser: Too many literals.");
         succ = false;
         return VariableReference();
     }
@@ -106,7 +109,7 @@ TypeSignature NewTypeSignature(uint8_t btype){
 TypeSignature NewTypeSignature(uint8_t btype, uint32_t arsize){
     TypeSignature ts;
     if(btype != VTYPE_ARRAY) {
-        qLogFail("AssertionError: TypeSignature should be array type when calling array type ctor.\n");
+        qLogFail("AssertionError: TypeSignature should be array type when calling array type ctor.");
         abort();
     }
     ts.basetype = btype;

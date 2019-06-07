@@ -469,7 +469,7 @@ extern int yylex (void);
 #undef yyTABLES_NAME
 #endif
 
-#line 75 "mini_c.l"
+#line 76 "mini_c.l"
 
 
 #line 475 "mini_c.lex.hpp"

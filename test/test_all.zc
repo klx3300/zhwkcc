@@ -34,7 +34,7 @@ int func_a();
 
 int func_c(int a);
 
-pointer int func_b(int param_a, float param_b, string param_c, pointer int param_d);
+int func_b(int param_a, float param_b, string param_c, pointer int param_d);
 
 // main function, supports command line arguments
 int main(pointer string args){
@@ -42,6 +42,8 @@ int main(pointer string args){
     glbl_intarr[0] = 1;
     // member op
     // builtin fns
+    func_a();
+    func_b(1, 0.0, "str", nullptr);
     io.println("Hello World!");
     return 0;
 }

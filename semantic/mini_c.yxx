@@ -9,6 +9,7 @@
 #include "val_type.hpp"
 #include "../utility/utility.hpp"
 #include "../lexical/mini_c.lex.hpp"
+#include "../object/generator.hpp"
 using namespace std;
 #define YYSTYPE ValueType
 extern int yylineno;
@@ -64,6 +65,9 @@ program:
     ExtDefList {
         $1->recursive_print(0);
         /* semantic_Analysis0($1); */
+        Generator GG;
+        NodeOperator($1, GG, nullptr, nullptr);
+        GG.dump_intercode();
     }
     ; 
 
@@ -289,7 +293,7 @@ Exp:
         $$->data.literal_int=extract_from_char_string($1);
     }
     | LiteralNullptr {
-        $$=new ASTNode(
+        $$=new ASTNode(TYPE_NULLPTR, NULL, NULL, NULL, yylineno);
     }
     ;
 

@@ -24,6 +24,12 @@ objfmt.o: ../object/objformat.cc ../object/objformat.hpp
 gen.o: ../object/generator.cc ../object/generator.hpp
 	@echo "   g++   gen.o"
 	@g++ -c -g -std=gnu++14 -o gen.o ../object/generator.cc
+genfan.o: ../object/generator_fancy.cc
+	@echo "   g++   genfan.o"
+	@g++ -c -g -std=gnu++14 -o genfan.o ../object/generator_fancy.cc
+stdlibs.o: ../object/stdlibs.cc ../object/stdlibs.hpp
+	@echo "   g++   stdlibs.o"
+	@g++ -c -g -std=gnu++14 -o stdlibs.o ../object/stdlibs.cc
 idtable.o: ../semantic/idtable.cc ../semantic/idtable.hpp
 	@echo "   g++   idtable.o"
 	@g++ -c -g -std=gnu++14 -o idtable.o ../semantic/idtable.cc
@@ -33,12 +39,12 @@ main.o: ../main.cc
 ast_node_op_gen.o: ../astNodeOpGen.cc
 	@echo "   g++   ast_node_op_gen.o"
 	@g++ -c -g -std=gnu++14 -o ast_node_op_gen.o ../astNodeOpGen.cc
-zhwkcc: main.o util.o fmt.o lex.o ast.o semantic.o idtable.o gen.o objfmt.o instrs.o 
+zhwkcc: main.o util.o fmt.o lex.o ast.o semantic.o idtable.o gen.o genfan.o objfmt.o instrs.o stdlibs.o 
 	@echo "   LD   zhwkcc"
-	@g++  -o zhwkcc main.o util.o fmt.o lex.o ast.o semantic.o idtable.o gen.o objfmt.o instrs.o 
+	@g++  -o zhwkcc main.o util.o fmt.o lex.o ast.o semantic.o idtable.o gen.o genfan.o objfmt.o instrs.o stdlibs.o 
 anoG: ast_node_op_gen.o util.o ast.o semantic.o lex.o 
 	@echo "   LD   anoG"
 	@g++  -o anoG ast_node_op_gen.o util.o ast.o semantic.o lex.o 
 clean:
 	@echo "  CLEAN   all files."
-	-@rm fmt.o lex.o ast.o semantic.o util.o instrs.o objfmt.o gen.o idtable.o main.o ast_node_op_gen.o zhwkcc anoG  2>/dev/null >/dev/null || true
+	-@rm fmt.o lex.o ast.o semantic.o util.o instrs.o objfmt.o gen.o genfan.o stdlibs.o idtable.o main.o ast_node_op_gen.o zhwkcc anoG  2>/dev/null >/dev/null || true

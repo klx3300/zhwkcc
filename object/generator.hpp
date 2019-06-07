@@ -7,8 +7,10 @@
 #include "instr.hpp"
 #include "../semantic/idtable.hpp"
 #include "../semantic/ast.hpp"
+#include "stdlibs.hpp"
 
 struct Generator{
+    StdLibrary stdlib;
     IdTable idtable;
     std::vector<InstructionFormat> codes;
     uint32_t func_id_alloc;
@@ -23,8 +25,10 @@ struct Generator{
     VariableReference int_one; // the integer 1
     VariableReference int_minusone; // the integer -1
     uint32_t temporals_id;
+    uint32_t in_loops;
     Generator();
-    std::string toExecutable();
+    void dump_intercode();
+    /* std::string toExecutable(); */
 };
 
 typedef void (*NodeOperatorFuncType)(ASTNode* node, Generator& G, VariableReference* tmpvar_refr, std::list<TypeSignature>* result_type);

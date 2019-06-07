@@ -1,5 +1,7 @@
 #include "utility.hpp"
 
+static double EPSILON = 1e-6;
+
 using namespace std;
 
 string uint_to_string(uint32_t u) {
@@ -40,4 +42,9 @@ string trim_string_quotes(string str){
 int extract_from_char_string(string chstr){
     if(chstr.length() < 2) return 0;
     return (unsigned char)(chstr[1]);
+}
+
+bool double_equal(double a, double b){
+    if(((a-b) < EPSILON) || ((b-a) < EPSILON)) return true;
+    return false;
 }

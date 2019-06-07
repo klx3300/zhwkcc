@@ -7,8 +7,10 @@
 #include <vector>
 #include <list>
 
+#include "../format/log.hpp"
 #include "../object/objformat.hpp"
 #include "../object/instr.hpp"
+#include "../utility/utility.hpp"
 
 enum VariableTypeSignature {
     VTYPE_INTEGER = 0,
@@ -43,6 +45,18 @@ struct TypeSignature {
     uint32_t arraysize;
 };
 
+static std::string TypeSignaturePrinter(const std::list<TypeSignature>& ts){
+    std::string tmpbuf;
+    for(const auto& x: ts){
+        tmpbuf += std::string(TypeSignatureStr[x.basetype]);
+        if(x.basetype == VTYPE_ARRAY){
+            tmpbuf += "(" + uint_to_string(x.arraysize) + ")";
+        }
+        tmpbuf += " ";
+    }
+    return tmpbuf;
+}
+
 struct FunctionSignature {
     std::list<TypeSignature> return_type;
     std::vector<std::list<TypeSignature>> param_types;
@@ -62,11 +76,23 @@ static inline bool TypeSignatureCompare(const std::list<TypeSignature>& a, const
 }
 
 static inline bool FuncSignatureCompare(const FunctionSignature& a, const FunctionSignature& b){
-    if(!TypeSignatureCompare(a.return_type, b.return_type)) return false;
-    if(a.param_types.size() != b.param_types.size()) return false;
+    if(!TypeSignatureCompare(a.return_type, b.return_type)){
+        qLogDebugfmt("Semantic Analysis: Function Signature mismatch: ret type %s != %s",
+                TypeSignaturePrinter(a.return_type).c_str(), TypeSignaturePrinter(b.return_type).c_str());
+        return false;
+    }
+    if(a.param_types.size() != b.param_types.size()){
+        qLogDebugfmt("Semantic Analysis: Function Signature mismatch: param num %lu != %lu",
+                a.param_types.size(), b.param_types.size());
+        return false;
+    }
     auto ai = a.param_types.begin(), bi = b.param_types.begin();
     while(ai != a.param_types.end()){
-        if(!TypeSignatureCompare((*ai), (*bi))) return false;
+        if(!TypeSignatureCompare((*ai), (*bi))){
+            qLogDebugfmt("Semantic Analysis: Function Signature mismatch: param type %s != %s",
+                    TypeSignaturePrinter(*ai).c_str(), TypeSignaturePrinter(*bi).c_str());
+            return false;
+        }
         ai++; bi++;
     }
     return true;

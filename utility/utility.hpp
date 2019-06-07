@@ -13,5 +13,7 @@ std::string trim_string_quotes(std::string str);
 
 int extract_from_char_string(std::string charstr);
 
+bool double_equal(double a, double b);
+
 
 #endif

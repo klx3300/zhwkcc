@@ -3,8 +3,7 @@
 
 #include <cstdint>
 
-const uint16_t VREF_CURRSCOPE = 0xFFFFu;
-
+const uint16_t VREF_CURRSCOPE = 0xFFFFu; 
 struct VariableReference {
     uint16_t scope;
     uint16_t varid;
@@ -48,6 +47,13 @@ enum InstructionTypeOperand {
     ITYPE_FLOAT,
     ITYPE_STRING,
     ITYPE_POINTER
+};
+
+const static char* ITypeStr[] = {
+    "INT",
+    "FLOAT",
+    "STRING",
+    "POINTER"
 };
 
 enum OpCodes {
@@ -144,6 +150,62 @@ static const char* OpNames[] = {
     "break",
     "continue",
     "!!Opcode Counts!!"
+};
+
+const static uint8_t OpParamSrcAv = 1,
+      OpParamSrcBv = 2,
+      OpParamDstv = 4,
+      OpParamSrcAi = 8,
+      OpParamSrcBi = 16,
+      OpParamDsti = 32;
+
+// this is for fancy printing. we doesn't support vari-len instrs.
+const static uint8_t OpParamUsage[] = {
+    0,/* OP_NOP, */
+    7,/* OP_ADD, */
+    7,/* OP_SUB, */
+    7,/* OP_MUL, */
+    7,/* OP_DIV, */
+    7,/* OP_LES, */
+    7,/* OP_GRE, */
+    7,/* OP_LEQ, */
+    7,/* OP_GEQ, */
+    7,/* OP_EQU, */
+    1,/* OP_IF, */
+    0,/* OP_ELSE, */
+    0,/* OP_IFEND, */
+    0,/* OP_LOOPCOND, */
+    1,/* OP_LOOP, */
+    0,/* OP_LOOPEND, */
+    24,/* OP_FUNC, */
+    1,/* OP_RET, */
+    5,/* OP_FUNCARG, */
+    28,/* OP_FUNCCALL, */
+    0,/* OP_FUNCABRT, */
+    0,/* OP_SPUSH, */
+    0,/* OP_SPOP, */
+    28,/* OP_VARDEF, */
+    5,/* OP_ARRLEN, */
+    7,/* OP_ARRCPY, */
+    7,/* OP_ARRSET, */
+    5,/* OP_GETADDR, */
+    5,/* OP_LOAD, */
+    5,/* OP_STORE, */
+    14,/* OP_ALLOC, */
+    1,/* OP_FREE, */
+    3,/* OP_RELOC, */
+    1,/* OP_NULLIFY, */
+    7,/* OP_AND, */
+    7,/* OP_OR, */
+    7,/* OP_NOT, */
+    7,/* OP_BWAND, */
+    7,/* OP_BWOR, */
+    7,/* OP_BWNOT, */
+    7,/* OP_BWXOR, */
+    1,/* OP_ARRRESET, */
+    0,/* OP_BREAK, */
+    0,/* OP_CONTINUE, */
+    0/* OP_COUNT_GUARD */
 };
 
 
